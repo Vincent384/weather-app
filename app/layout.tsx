@@ -16,6 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* PWA meta and manifest links */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#007bff" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   );
