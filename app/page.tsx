@@ -1,113 +1,187 @@
-import Image from "next/image";
+'use client'
+import { Thermometer, ThermometerSnowflake, ThermometerSun } from 'lucide-react'
+import React, { useState } from 'react'
+import { Tomorrow } from './component/Tomorrow'
+import { ThirdDay } from './component/ThirdDay'
+import { ForthDay } from './component/ForthDay'
+import { FithDay } from './component/FithDay'
 
-export default function Home() {
+
+
+const Home = () => {
+
+  
+  const defaultFormData: InputForm = {
+    input: ''
+  }
+
+  const [form, setForm] = useState<InputForm>(defaultFormData)
+  const [weather, setWeather] = useState<WeatherResponse | null>(null)
+  const [forcastWeather, setForcastWeather] = useState<ForecastWeatherResponse | null>(null)
+  const [toggleSpanBlock, setToggleSpanBlock] = useState<boolean>(false)
+  const [toggle, setToggle] = useState<boolean>(false)
+
+  async function getForcastData(city: string) {
+    setForcastWeather(null)
+    try {
+      const res = await fetch(`/api/forecast?q=${city}`, {
+        headers: {
+          type: 'application/json'
+        }
+      })
+      if (!res.ok) {
+        console.error(res.status)
+        return
+      }
+
+      const data = await res.json()
+      setForcastWeather(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function getData(city: string) {
+    setWeather(null)
+    try {
+      const res = await fetch(`/api/weather?q=${city}`, {
+        headers: {
+          type: 'application/json'
+        }
+      })
+
+      if (!res.ok) {
+        console.error(res.status)
+        return
+      }
+
+      const data = await res.json()
+      setWeather(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function onSumbit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    await getData(form.input)
+    await getForcastData(form.input)
+    setForm({ input: '' }) 
+    setToggleSpanBlock(true)
+  }
+
+  function onChangeHandler(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target
+    setForm(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  function toggleDayHandler(){
+    setToggle((prev) => !prev)
+  }
+
+  const findDay = forcastWeather?.list.filter((day) => {
+    const todaysDate = new Date().getDate()
+    const dayOfForecast = new Date(day.dt_txt).getDate()
+    return dayOfForecast === todaysDate
+  })
+
+
+
+  const todaysDate = new Date();
+
+  const year = todaysDate.getFullYear()
+  const month = String(todaysDate.getMonth() + 1).padStart(2, '0')
+  const day = String(todaysDate.getDate()).padStart(2, '0')
+  
+  const noCity = form.input === '' && !weather
+  const invalidCity = form.input !== '' && !weather
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <div className='h-screen bg-emerald-900 overflow-auto pb-10'>
+      <form onSubmit={onSumbit} className='flex py-5 bg-slate-500 justify-center items-center text-center'>
+        <input name='input' value={form.input} onChange={onChangeHandler} className='p-2 mr-2 rounded-lg' type="text" />
+        <button className='bg-green-800 text-white rounded-lg py-2 px-4 text-center'>Kolla Väder</button>
+      </form>
+      <div>
+        {
+          weather && (
+            <div className=''>
+              <div className='flex flex-col gap-3 justify-center items-center pt-10'>
+                <h1 className='text-3xl text-white font-bold'>{weather.name}</h1>
+                <h2 className='text-white flex justify-center items-center'>Temperatur &nbsp; <span className='font-bold text-xl text-white'>{weather.main.temp}</span>&nbsp; <Thermometer /></h2>
+                <h3 className='text-white flex justify-center items-center'>Minimum temperatur &nbsp; <span className='font-bold text-xl text-white'>{weather.main.temp_min}</span>&nbsp;<ThermometerSnowflake /></h3>
+                <h3 className='text-white flex justify-center items-center'>Max temperatur &nbsp; <span className='font-bold text-xl text-white'>{weather.main.temp_max}</span>&nbsp;<ThermometerSun /></h3>
+                <h4 className='text-white'><span>{weather.weather[0].description}</span></h4>
+                <img
+                  src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+                  alt="Weather Icon"
+                  className="w-20 h-20"
+                />
+              </div>
+            </div>
+          )
+        }
+{toggleSpanBlock && (
+        findDay && findDay.length > 0 && toggle ? (
+          <div className='p-5 overflow-x-auto'>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+            
+          
+        
+                  <span className='text-white font-bold text-xl flex justify-center
+                  items-center m-5 border-2 p-5 bg-black
+                    cursor-pointer' onClick={toggleDayHandler}>{`${year}-${month}-${day}`}</span>
+        
+            {findDay.map((weather, index) => {
+              const time = weather.dt_txt.split(" ")[1];
+              
+              return (
+                <div key={index} className='grid grid-cols-4 text-center animate-slideDown'>
+                  <h1 className='text-black font-bold border flex justify-center items-center bg-white rounded-full'>{time}</h1> 
+                  <h2 className='text-white flex flex-col items-center justify-center'>Temp &nbsp; <span className=' font-bold text-xs text-white'>{weather.main.temp}</span>&nbsp; <Thermometer /></h2>
+                  <h3 className='text-white flex flex-col items-center justify-center '>Min &nbsp; <span className='font-bold text-xs text-white'>{weather.main.temp_min}</span>&nbsp;<ThermometerSnowflake /></h3>
+                  <h3 className='text-white flex flex-col items-center justify-center'>Max &nbsp; <span className='font-bold text-xs text-white'>{weather.main.temp_max}</span>&nbsp;<ThermometerSun /></h3>
+                  <h4 className='text-white flex flex-col items-center justify-center'><span className=''>{weather.weather[0].description}</span></h4>
+                  <img
+                    src={`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+                    alt="Weather Icon"
+                    className="w-20 h-20"
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <span className='text-white font-bold text-xl flex justify-center items-center m-5 border-2 p-5 bg-black cursor-pointer' onClick={toggleDayHandler}>
+            {`${year}-${month}-${day}`}
+          </span>
+        )
+)
 }
+  <Tomorrow forcastWeather={forcastWeather} toggleSpanBlock={toggleSpanBlock}/>
+  <ThirdDay forcastWeather={forcastWeather} toggleSpanBlock={toggleSpanBlock}/>
+  <ForthDay forcastWeather={forcastWeather} toggleSpanBlock={toggleSpanBlock}/>
+  <FithDay forcastWeather={forcastWeather} toggleSpanBlock={toggleSpanBlock}/>
+        {
+          noCity && (
+            <div className='flex justify-center items-center mt-10'>
+              <h1 className='font-bold text-white text-lg'>No city selected</h1>
+            </div>
+          )
+        }
+        {
+          invalidCity && (
+            <div className='flex justify-center items-center mt-10'>
+              <h1 className='font-bold text-white text-lg'>{`City ${form.input} not found`}</h1>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  )
+}
+
+export default Home
