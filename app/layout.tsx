@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'My PWA App',
+  title: 'Väder-app',
   description: 'Check the weather',
 };
 
