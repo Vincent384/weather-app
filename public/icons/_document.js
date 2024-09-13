@@ -5,7 +5,7 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          {/* Manifest and theme color */}
+    
           <link rel="manifest" href="/manifest.json" />
           <meta name="theme-color" content="#000000" />
 
