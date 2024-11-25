@@ -26,6 +26,7 @@ import React, { useState } from 'react'
       })
 
     const todaysDate = new Date();
+    const weekday = ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag']
 
       const year = tomorrowDate.getFullYear()
       const month = String(tomorrowDate.getMonth() + 1).padStart(2, '0')
@@ -39,7 +40,7 @@ import React, { useState } from 'react'
               tomorrowsDay && tomorrowsDay.length > 0 && tomorrowToggle ? (
                 <div className='p-5 overflow-x-auto'>
                   <span className='text-white font-bold text-xl flex justify-center items-center m-5 border-2 p-5
-                  bg-black cursor-pointer' onClick={toggleDayHandler}>{`${year}-${month}-${day}`}</span>
+                  bg-black cursor-pointer' onClick={toggleDayHandler}>{`${weekday[todaysDate.getDay() + 1]} ${year}-${month}-${day}`}</span>
                   {tomorrowsDay.map((weather, index) => {
                     const time = weather.dt_txt.split(" ")[1];
             
@@ -59,7 +60,7 @@ import React, { useState } from 'react'
                 </div>
               ) : (
                 <span className='text-white font-bold text-xl flex justify-center items-center m-5 border-2 p-5 bg-black cursor-pointer' onClick={toggleDayHandler}>
-                  {`${year}-${month}-${day}`}
+                  {`${weekday[todaysDate.getDay() + 1]}  ${year}-${month}-${day}`}
                 </span>
               )
       )

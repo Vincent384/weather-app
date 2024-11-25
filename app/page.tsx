@@ -88,7 +88,7 @@ const Home = () => {
     return dayOfForecast === todaysDate
   })
 
-
+  const weekday = ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag']
 
   const todaysDate = new Date();
 
@@ -133,7 +133,7 @@ const Home = () => {
         
                   <span className='text-white font-bold text-xl flex justify-center
                   items-center m-5 border-2 p-5 bg-black
-                    cursor-pointer' onClick={toggleDayHandler}>{`${year}-${month}-${day}`}</span>
+                    cursor-pointer' onClick={toggleDayHandler}>{`${weekday[todaysDate.getDay()]} ${year}-${month}-${day}`}</span>
         
             {findDay.map((weather, index) => {
               const time = weather.dt_txt.split(" ")[1];
@@ -156,7 +156,7 @@ const Home = () => {
           </div>
         ) : (
           <span className='text-white font-bold text-xl flex justify-center items-center m-5 border-2 p-5 bg-black cursor-pointer' onClick={toggleDayHandler}>
-            {`${year}-${month}-${day}`}
+            {`${weekday[todaysDate.getDay()]} ${year}-${month}-${day}`}
           </span>
         )
 )
