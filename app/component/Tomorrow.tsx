@@ -10,7 +10,7 @@ import React, { useState } from 'react'
     const tomorrowDay = tomorrowDate.getDate()
     const tomorrowsMonth = tomorrowDate.getMonth()
     const tomorrowYear = tomorrowDate.getFullYear()
-
+    
     const [tomorrowToggle, setTomorrowToggle] = useState<boolean>(false)
 
 
@@ -27,6 +27,7 @@ import React, { useState } from 'react'
 
     const todaysDate = new Date();
     const weekday = ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag']
+    const nextDayIndex = (todaysDate.getDay() + 1) % weekday.length
 
       const year = tomorrowDate.getFullYear()
       const month = String(tomorrowDate.getMonth() + 1).padStart(2, '0')
@@ -60,7 +61,7 @@ import React, { useState } from 'react'
                 </div>
               ) : (
                 <span className='text-white font-bold text-xl flex justify-center items-center m-5 border-2 p-5 bg-black cursor-pointer' onClick={toggleDayHandler}>
-                  {`${weekday[todaysDate.getDay() + 1]}  ${year}-${month}-${day}`}
+                  {`${weekday[nextDayIndex]}  ${year}-${month}-${day}`}
                 </span>
               )
       )

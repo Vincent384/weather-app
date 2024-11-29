@@ -26,6 +26,7 @@ export const ThirdDay: React.FC<TomorrowProps> = ({ forcastWeather,toggleSpanBlo
 
     const todaysDate = new Date();
     const weekday = ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag']
+    const nextDayIndex = (todaysDate.getDay() + 2) % weekday.length
 
       const year = tomorrowDate.getFullYear()
       const month = String(tomorrowDate.getMonth() + 2).padStart(2, '0')
@@ -59,7 +60,7 @@ export const ThirdDay: React.FC<TomorrowProps> = ({ forcastWeather,toggleSpanBlo
                 </div>
               ) : (
                 <span className='text-white font-bold text-xl flex justify-center items-center m-5 border-2 p-5 bg-black cursor-pointer' onClick={toggleDayHandler}>
-                  {`${weekday[todaysDate.getDay() + 2]}  ${year}-${month}-${day}`}
+                  {`${weekday[nextDayIndex]}  ${year}-${month}-${day}`}
                 </span>
               )
       )

@@ -87,10 +87,11 @@ const Home = () => {
     const dayOfForecast = new Date(day.dt_txt).getDate()
     return dayOfForecast === todaysDate
   })
+  const todaysDate = new Date();
 
   const weekday = ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag']
+  
 
-  const todaysDate = new Date();
 
   const year = todaysDate.getFullYear()
   const month = String(todaysDate.getMonth() + 1).padStart(2, '0')
@@ -133,7 +134,7 @@ const Home = () => {
         
                   <span className='text-white font-bold text-xl flex justify-center
                   items-center m-5 border-2 p-5 bg-black
-                    cursor-pointer' onClick={toggleDayHandler}>{`${weekday[todaysDate.getDay()]} ${year}-${month}-${day}`}</span>
+                    cursor-pointer' onClick={toggleDayHandler}>{`${weekday[todaysDate.getDate()]} ${year}-${month}-${day}`}</span>
         
             {findDay.map((weather, index) => {
               const time = weather.dt_txt.split(" ")[1];
